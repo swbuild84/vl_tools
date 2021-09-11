@@ -31,7 +31,7 @@ namespace vl_tools
         public string _sSide;
         public string Dist => _sDist;
         
-        //private const string _pickeVarName = "[ПК]";
+        private const string _pickteVarName = "[ПК]";
         //private const string _kilometerVarName = "[КМ]";
         //private const string _offsetVarName = "[СТОРОНА_СМЕЩЕНИЯ]";
         //private const string _offsetVarName = "[ДИСТАНЦИЯ_СМЕЩЕНИЯ]";
@@ -176,7 +176,7 @@ namespace vl_tools
 
         public string Interpret(string expression)
         {
-            string res = expression.Replace(_pickeVarName, _sPicket);
+            string res = expression.Replace(_pickteVarName, _sPicket);
             return res;
         }
     }

@@ -14,7 +14,7 @@ namespace vl_tools
             variables = new Dictionary <string, string>();
         }
         // получаем значение переменной по ее имени
-        public int GetVariable(string name)
+        public string GetVariable(string name)
         {
             return variables[name];
         }

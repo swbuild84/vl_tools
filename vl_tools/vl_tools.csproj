@@ -161,6 +161,8 @@
     <Compile Include="VLDwgObject.cs" />
     <Compile Include="VLFileOptions.cs" />
     <Compile Include="VLPicketClass.cs" />
+    <Compile Include="VLRoadLightClass.cs" />
+    <Compile Include="VL_UtilityClass.cs" />
     <Compile Include="VolumeForm.cs">
       <SubType>Form</SubType>
     </Compile>
