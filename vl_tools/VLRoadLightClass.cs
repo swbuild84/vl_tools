@@ -38,7 +38,7 @@ namespace vl_tools
                     }
                     return NextPnt;
                 }
-                else throw new Exception();
+                else throw new VLRoadLightInvalidInputException("Дистанция за пределами полилинии");
 
             }
             catch (Exception)
@@ -48,5 +48,10 @@ namespace vl_tools
 
         }
 
+    }
+
+    public class VLRoadLightInvalidInputException : Exception
+    {
+        public VLRoadLightInvalidInputException(string message) : base(message) { }        
     }
 }

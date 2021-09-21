@@ -4827,41 +4827,58 @@ namespace vl_tools
                 if (dblRes.Status != PromptStatus.OK) return;
                 double step = dblRes.Value;
 
-                double tolerance = 0.1;
-                Point3d OnPLPoint = _pl1.GetClosestPointTo(startPnt2D, true);
-                double dist = _pl1.GetDistAtPoint(OnPLPoint);
-                Point3d CurPoint = OnPLPoint;
-                dist += step;
-                while (dist <= _pl1.Length)
-                {    
-                    Point3d NextPnt = _pl1.GetPointAtDist(dist);
-                    double calcStep = (NextPnt - CurPoint).Length;
-                    while (Math.Abs(calcStep - step) > tolerance)
+                Point3d NextPnt = VLRoadLightClass.GetPlPointAtDist(_pl1, startPnt2D, step, 0.1);
+                using (Transaction tr = dbCurrent.TransactionManager.StartTransaction())
+                {
+                    BlockTableRecord space = (BlockTableRecord)tr.GetObject(dbCurrent.CurrentSpaceId, OpenMode.ForWrite);
+                    if (space.Name.ToUpper() != BlockTableRecord.ModelSpace || space.IsDynamicBlock)
                     {
-                        double delta = step - calcStep;
-                        dist += delta / 2;
-                        NextPnt = _pl1.GetPointAtDist(dist);
-                        calcStep = (NextPnt - CurPoint).Length;
-                    }
-                    CurPoint = NextPnt;
-                    dist += step;
-
-                    using (Transaction tr = dbCurrent.TransactionManager.StartTransaction())
-                    {
-                        BlockTableRecord space = (BlockTableRecord)tr.GetObject(dbCurrent.CurrentSpaceId, OpenMode.ForWrite);
-                        if (space.Name.ToUpper() != BlockTableRecord.ModelSpace || space.IsDynamicBlock)
-                        {
-                            //ed.WriteMessage("Программа может быть выполнена только в простанстве модели!\n");
-                            tr.Commit();
-                            return;
-                        }
-                        DBPoint acPoint = new DBPoint(new Point3d(NextPnt.X, NextPnt.Y, 0));
-                        acPoint.SetDatabaseDefaults();
-                        space.AppendEntity(acPoint);
-                        tr.AddNewlyCreatedDBObject(acPoint, true);                        
+                        ed.WriteMessage("Программа может быть выполнена только в простанстве модели!\n");
                         tr.Commit();
-                    }                  
+                        return;
+                    }
+                    DBPoint acPoint = new DBPoint(new Point3d(NextPnt.X, NextPnt.Y, 0));
+                    acPoint.SetDatabaseDefaults();
+                    space.AppendEntity(acPoint);
+                    tr.AddNewlyCreatedDBObject(acPoint, true);
+                    tr.Commit();
                 }
+
+                //double tolerance = 0.1;
+                //Point3d OnPLPoint = _pl1.GetClosestPointTo(startPnt2D, true);
+                //double dist = _pl1.GetDistAtPoint(OnPLPoint);
+                //Point3d CurPoint = OnPLPoint;
+                //dist += step;
+                //while (dist <= _pl1.Length)
+                //{    
+                //    Point3d NextPnt = _pl1.GetPointAtDist(dist);
+                //    double calcStep = (NextPnt - CurPoint).Length;
+                //    while (Math.Abs(calcStep - step) > tolerance)
+                //    {
+                //        double delta = step - calcStep;
+                //        dist += delta / 2;
+                //        NextPnt = _pl1.GetPointAtDist(dist);
+                //        calcStep = (NextPnt - CurPoint).Length;
+                //    }
+                //    CurPoint = NextPnt;
+                //    dist += step;
+
+                //    using (Transaction tr = dbCurrent.TransactionManager.StartTransaction())
+                //    {
+                //        BlockTableRecord space = (BlockTableRecord)tr.GetObject(dbCurrent.CurrentSpaceId, OpenMode.ForWrite);
+                //        if (space.Name.ToUpper() != BlockTableRecord.ModelSpace || space.IsDynamicBlock)
+                //        {
+                //            //ed.WriteMessage("Программа может быть выполнена только в простанстве модели!\n");
+                //            tr.Commit();
+                //            return;
+                //        }
+                //        DBPoint acPoint = new DBPoint(new Point3d(NextPnt.X, NextPnt.Y, 0));
+                //        acPoint.SetDatabaseDefaults();
+                //        space.AppendEntity(acPoint);
+                //        tr.AddNewlyCreatedDBObject(acPoint, true);                        
+                //        tr.Commit();
+                //    }                  
+                //}
 
             }
             catch (System.Exception ex)
